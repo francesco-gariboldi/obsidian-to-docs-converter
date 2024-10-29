@@ -1,5 +1,5 @@
 # obsidian-to-docs-converter
-A basic tool to convert an Obsidian vault to HTML documentation
+A Python basic tool to convert an Obsidian vault to HTML documentation
 
 
 ### Instructions
