@@ -10,8 +10,8 @@ A bsaic tool to convert an Obsidian vault to HTML documentation
 Obsidian links are pretty well converted, but sometimes you can get an error. It distinguishes file obsidian links (`![[file]]`) from non file ones.
 
 ### Limits:
-Only transfers notes. All notes must be in the same folder (doesn'work on folder structures)
+Only copies notes. All notes must be in the same folder (doesn'work on folder structures)
 
 ### Next features (work in progress):
-- Also transfer images
-- Recognize and reproduce vaults entire folder structure
+- Also copying images
+- Recognizing and copying vault's entire folder structure
