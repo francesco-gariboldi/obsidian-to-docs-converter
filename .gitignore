@@ -1,0 +1,12 @@
+# Ignore everything inside the specified folders
+output/
+pages/*
+
+# Allow placeholder files in directories
+!pages/.gitkeep
+
+# Explicitly allow other files in the root directory
+!LICENSE
+!README.md
+!generate_site.py
+
