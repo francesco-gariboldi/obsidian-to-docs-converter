@@ -4,22 +4,23 @@ import shutil
 from markdown_it import MarkdownIt
 from jinja2 import Environment, FileSystemLoader
 
-# Percorsi principali
+# Main paths
 pages_dir = 'pages'
 output_dir = 'output'
 templates_dir = 'templates'
+css_filename = 'style.css'  # CSS file name
 
-# Carica il template con Jinja2
+# Load the template with Jinja2
 env = Environment(loader=FileSystemLoader(templates_dir))
 template = env.get_template('base.html')
 
-# Assicura che la cartella di output esista
+# Ensure that the output folder exists
 os.makedirs(output_dir, exist_ok=True)
 
-# Configura markdown-it-py per il parsing Markdown
+# Configure markdown-it-py for Markdown parsing
 md = MarkdownIt()
 
-# Funzione per estrarre link interni e immagini Obsidian
+# Function to extract Obsidian internal links and images
 def get_md_matches(content):
     md_reg = r'(!)?\[\[(?:(.+?)\|)?(.+?)\]\]'
     matches = re.finditer(md_reg, content)
@@ -36,7 +37,7 @@ def get_md_matches(content):
     
     return output_array
 
-# Funzione per convertire i link interni di Obsidian in link HTML
+# Function to convert Obsidian internal links to HTML links
 def convert_obsidian_links(text):
     matches = get_md_matches(text)
     
@@ -53,41 +54,70 @@ def convert_obsidian_links(text):
     
     return text
 
-# Lista delle pagine generate per il menu
+# Function to convert Obsidian callouts to HTML
+def convert_callouts(text):
+    # Define a regex to match callouts in various forms like `>[!]`, `> [!]`, or `>`.
+    callout_pattern = r'^\s*>\s*(\[\s*(!|\?|i|x)\s*\])?\s*(.*)$'
+    callout_classes = {
+        '!': 'note',      # general note
+        '?': 'question',  # question
+        'i': 'info',      # info
+        'x': 'warning'    # warning
+    }
+
+    def callout_replacer(match):
+        # Determine if it's a specific callout type or a generic blockquote
+        callout_type = match.group(2)
+        content = match.group(3)
+        
+        # Assign a CSS class or default to 'note' for unspecified callout types
+        callout_class = callout_classes.get(callout_type, 'note') if callout_type else 'blockquote'
+        return f'<div class="callout {callout_class}"><p>{content}</p></div>'
+
+    # Apply the callout pattern line by line
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        lines[i] = re.sub(callout_pattern, callout_replacer, line)
+    return '\n'.join(lines)
+
+# List of generated pages for the menu
 pages = []
 
-# Genera un file HTML per ogni file Markdown
+# Generate an HTML file for each Markdown file
 for filename in os.listdir(pages_dir):
     if filename.endswith('.md'):
-        # Legge il file Markdown
+        # Read the Markdown file
         with open(os.path.join(pages_dir, filename), 'r', encoding='utf-8') as f:
             text = f.read()
 
-        # Converte i link interni di Obsidian
+        # Convert Obsidian callouts
+        text = convert_callouts(text)
+
+        # Convert Obsidian internal links
         text = convert_obsidian_links(text)
 
-        # Converte il contenuto Markdown in HTML
+        # Convert Markdown content to HTML
         html_content = md.render(text)
 
-        # Nome della pagina per il menu
-        page_title = filename.replace('.md', '').title()
+        # Page name for the menu
+        page_title = filename.replace('.md', '').capitalize()
 
-        # Renderizza il contenuto nel template
+        # Render the content into the template
         output_content = template.render(
             title=page_title,
             content=html_content,
             pages=[f"{file.replace('.md', '.html')}" for file in os.listdir(pages_dir) if file.endswith('.md')]
         )
 
-        # Salva la pagina come file HTML
+        # Save the page as an HTML file
         output_filename = os.path.join(output_dir, filename.replace('.md', '.html'))
         with open(output_filename, 'w', encoding='utf-8') as f:
             f.write(output_content)
         
-        # Aggiunge al menu
+        # Add to the menu
         pages.append((page_title, filename.replace('.md', '.html')))
 
-# Genera la homepage (index.html) con i link a tutte le pagine
+# Generate the homepage (index.html) with links to all pages
 index_content = template.render(
     title="Home",
     content="<h1>Indice dei Contenuti</h1><ul>" +
@@ -96,8 +126,21 @@ index_content = template.render(
     pages=[page[1] for page in pages]
 )
 
-# Salva la homepage come index.html
+# Save the homepage as index.html
 with open(os.path.join(output_dir, 'index.html'), 'w', encoding='utf-8') as f:
     f.write(index_content)
+
+# Copy the CSS file to the output folder
+css_source = os.path.join(templates_dir, css_filename)
+css_dest = os.path.join(output_dir, css_filename)
+if os.path.exists(css_source):
+    shutil.copy(css_source, css_dest)
+
+# Copy any non-Markdown file from the "pages" folder to the "output" folder
+for filename in os.listdir(pages_dir):
+    src_path = os.path.join(pages_dir, filename)
+    dest_path = os.path.join(output_dir, filename)
+    if not filename.endswith('.md'):
+        shutil.copy(src_path, dest_path)
 
 print("Sito generato nella cartella 'output'")

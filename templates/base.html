@@ -40,6 +40,7 @@
           }
       }
     </script>
+    <h1>{{ title }}</h1>
 </head>
 <body>
     <nav>
@@ -47,7 +48,7 @@
             <button onclick="toggleDropdown()" class="dropbtn">ADati Indice</button>
             <div id="dropdown-content" class="dropdown-content">
                 {% for page in pages %}
-                    <a href="{{ page }}">{{ page.split('.')[0].title() }}</a>
+                    <a href="{{ page }}">{{ page.split('.')[0] }}</a>
                 {% endfor %}
             </div>
         </div>
