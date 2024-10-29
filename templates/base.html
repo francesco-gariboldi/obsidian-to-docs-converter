@@ -48,7 +48,7 @@
             <button onclick="toggleDropdown()" class="dropbtn">ADati Indice</button>
             <div id="dropdown-content" class="dropdown-content">
                 {% for page in pages %}
-                    <a href="{{ page }}">{{ page.split('.')[0] }}</a>
+                    <a href="{{ page }}">{{ page.replace('.html', '')[0] | upper }}{{ page.replace('.html', '')[1:] }}</a>
                 {% endfor %}
             </div>
         </div>

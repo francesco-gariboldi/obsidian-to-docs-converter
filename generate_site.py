@@ -99,8 +99,8 @@ for filename in os.listdir(pages_dir):
         # Convert Markdown content to HTML
         html_content = md.render(text)
 
-        # Page name for the menu
-        page_title = filename.replace('.md', '').capitalize()
+        # Page name for the menu. Uppercase only for the first letter
+        page_title = filename.replace('.md', '')[0].upper() + filename.replace('.md', '')[1:]
 
         # Render the content into the template
         output_content = template.render(
@@ -120,7 +120,7 @@ for filename in os.listdir(pages_dir):
 # Generate the homepage (index.html) with links to all pages
 index_content = template.render(
     title="Home",
-    content="<h1>Indice dei Contenuti</h1><ul>" +
+    content="<h1>Indice dei contenuti</h1><ul>" +
             "".join(f'<li><a href="{page[1]}">{page[0]}</a></li>' for page in pages) +
             "</ul>",
     pages=[page[1] for page in pages]
