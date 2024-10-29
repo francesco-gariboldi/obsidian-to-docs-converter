@@ -110,3 +110,11 @@ code {
     background-color: #f1f1f1;
     border-left: 5px solid #cccccc;
 }
+
+/* images */
+img {
+    max-width: 100%;   /* Scale image to fit within its container */
+    height: auto;      /* Maintain aspect ratio */
+    display: block;    /* Prevent inline space below images */
+    margin: 0 auto;    /* Center image if within a container */
+}

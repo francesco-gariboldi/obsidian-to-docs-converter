@@ -22,15 +22,16 @@ md = MarkdownIt()
 
 # Function to extract Obsidian internal links and images
 def get_md_matches(content):
-    md_reg = r'(!)?\[\[(?:(.+?)\|)?(.+?)\]\]'
+    # Regex pattern for Obsidian links and embeds
+    md_reg = r'(!)?\[\[([^\]|]+)(?:\|([^\]]+))?\]\]'
     matches = re.finditer(md_reg, content)
     
     output_array = [
         {
-            'link': match.group(3),
-            'alt': match.group(2) or "",
-            'isEmbed': bool(match.group(1)),
-            'original': match.group(0)
+            'link': match.group(2).strip(),       # The link target (first part before |)
+            'alt': match.group(3).strip() if match.group(3) else match.group(2).strip(),  # Alt text or link if no alt
+            'isEmbed': bool(match.group(1)),      # True if it's an embed (has "!")
+            'original': match.group(0)            # Original matched text
         }
         for match in matches
     ]
