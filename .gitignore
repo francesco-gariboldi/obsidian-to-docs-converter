@@ -2,7 +2,9 @@
 output/
 pages/*
 
+# Ignore work in progress files and bibliography
 bibtex_feature.py
+references.bib
 
 # Allow placeholder files in directories
 !pages/.gitkeep
