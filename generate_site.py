@@ -1,14 +1,24 @@
 import os
+import sys
 import re
 import shutil
 from markdown_it import MarkdownIt
 from jinja2 import Environment, FileSystemLoader
 
+# Set the base directory based on the executable's path (PyInstaller's _MEIPASS when frozen)
+if getattr(sys, 'frozen', False):
+    base_dir = sys._MEIPASS
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Main paths
-pages_dir = 'pages'
-output_dir = 'output'
-templates_dir = 'templates'
-css_filename = 'style.css'  # CSS file name
+pages_dir = os.path.join(base_dir, 'pages')
+templates_dir = os.path.join(base_dir, 'templates')
+css_filename = 'style.css'
+
+# Define output directory on the Desktop
+output_dir = os.path.join(os.path.expanduser("~"), 'Desktop', 'ADati_appunti')
+os.makedirs(output_dir, exist_ok=True)
 
 # Load the template with Jinja2
 env = Environment(loader=FileSystemLoader(templates_dir))
